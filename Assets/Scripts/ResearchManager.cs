@@ -15,6 +15,9 @@ using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Audio;
 using System.Text;
+using Microsoft.MixedReality.OpenXR;
+using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 
 #if ENABLE_WINMD_SUPPORT
 using Windows.Perception.Spatial;
@@ -51,7 +54,7 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
     private float[] currentBuffer = new float[] { };
     private Vector3 _curCamPosition = Vector3.zero;
     private Vector3 _curForward = Vector3.zero;
-    private float _calibrate = -0.019f;
+    private float _calibrate = -0.02f;
     private bool _renderPointCloud = true;
     private Vector3 _camOffset = Vector3.zero;
 
@@ -71,6 +74,7 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
         }
 
         _camOffset = Vector3.zero;
+        //_curForward = CameraCache.Main.transform.forward;
         // create origin axis
         Material whiteMat = new Material(Shader.Find("Standard"));
         whiteMat.SetColor("_Color", Color.white);
@@ -78,8 +82,12 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
         _origin.transform.position = new Vector3(0, 0, 0);
         _origin.transform.rotation = Quaternion.identity;
 
-        MyInfo.text = $"Offset={_camOffset.x},{_camOffset.y},{_camOffset.z}\r\n";
+        InitResearchMode();
+    }
 
+
+    private void InitResearchMode()
+    {
 #if ENABLE_WINMD_SUPPORT
         researchMode = new HL2ResearchMode();
         researchMode.InitializeLongDepthSensor();
@@ -87,7 +95,16 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
 
         try
         {
-            unityWorldOrigin = SpatialLocator.GetDefault().CreateStationaryFrameOfReferenceAtCurrentLocation().CoordinateSystem;
+            unityWorldOrigin = PerceptionInterop.GetSceneCoordinateSystem(UnityEngine.Pose.identity) as SpatialCoordinateSystem;
+
+            if (unityWorldOrigin != null)
+                MyInfo.text += $"unityWorldOrigin PerceptionInterop={unityWorldOrigin}\r\n";
+            else
+                unityWorldOrigin = SpatialLocator.GetDefault().CreateStationaryFrameOfReferenceAtCurrentLocation().CoordinateSystem;
+ 
+            if (unityWorldOrigin != null)
+                MyInfo.text += $"unityWorldOrigin SpatialLocator={unityWorldOrigin}\r\n";
+
             researchMode.SetReferenceCoordinateSystem(unityWorldOrigin);
         }
         catch(Exception myEx)
@@ -99,7 +116,7 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
         researchMode.SetPointCloudDepthOffset(0);
         researchMode.StartLongDepthSensorLoop(enablePointCloud);
         //researchMode.StartSpatialCamerasFrontLoop();
-#endif
+#endif    
 
     }
 
@@ -131,7 +148,7 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
             currentBuffer = researchMode.GetLongThrowPointCloudBuffer();
 #endif
             _curCamPosition = CameraCache.Main.transform.position;
-            _curForward = CameraCache.Main.transform.forward;
+            //_curForward = CameraCache.Main.transform.forward;
 
             Thread worker = new Thread(new ThreadStart(UpdateSensorPoints));
             worker.Start();
@@ -164,7 +181,7 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
         List<Vector3> tempPoints = new List<Vector3>();
         List<Vector3> sensorPoints = new List<Vector3>();
         Vector3 closestPoint = Vector3.zero;
-        Vector3 deltaError = _curForward * _calibrate;
+        //Vector3 deltaError = _curForward * _calibrate;
         try
         {
             if (currentBuffer.Length == 0)
@@ -173,8 +190,11 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
             int pointCloudLength = currentBuffer.Length / 3;
             for (int i = 0; i < pointCloudLength; i++)
             {
-                var curPt = new Vector3(currentBuffer[3 * i], currentBuffer[3 * i + 1], currentBuffer[3 * i + 2]);
-                curPt = curPt + _camOffset;
+                var x = currentBuffer[3 * i];
+                var y = currentBuffer[3 * i + 1];
+                var z = currentBuffer[3 * i + 2];
+                var curPt = new Vector3(x, y, z);
+                //curPt = curPt - _camOffset;
 
                 var dist = Vector3.Distance(_curCamPosition, curPt);
                 if (dist < 0.75f)
@@ -271,6 +291,10 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
 
             case "move back":
                 _camOffset = new Vector3(_camOffset.x, _camOffset.y, _camOffset.z + delta);
+                break;
+
+            case "add offset":
+                _camOffset = CurrentClosePoint;
                 break;
         }
 
