@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Sensor01 OpenXRCameraSettingsProfile
   m_EditorClassIdentifier: 
   isCustomProfile: 1
-  reprojectionMethod: 0
+  reprojectionMethod: 1

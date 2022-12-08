@@ -91,7 +91,7 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
 #if ENABLE_WINMD_SUPPORT
         researchMode = new HL2ResearchMode();
         researchMode.InitializeLongDepthSensor();
-        //researchMode.InitializeSpatialCamerasFront();
+        researchMode.InitializeSpatialCamerasFront();
 
         try
         {
@@ -115,7 +115,7 @@ public class ResearchManager : MonoBehaviour, IMixedRealitySpeechHandler
 
         researchMode.SetPointCloudDepthOffset(0);
         researchMode.StartLongDepthSensorLoop(enablePointCloud);
-        //researchMode.StartSpatialCamerasFrontLoop();
+        researchMode.StartSpatialCamerasFrontLoop();
 #endif    
 
     }

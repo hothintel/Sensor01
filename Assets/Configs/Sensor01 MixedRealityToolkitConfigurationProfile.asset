@@ -35,22 +35,22 @@ MonoBehaviour:
   teleportSystemType:
     reference: Microsoft.MixedReality.Toolkit.Teleport.MixedRealityTeleportSystem,
       Microsoft.MixedReality.Toolkit.Services.TeleportSystem
-  enableSpatialAwarenessSystem: 0
+  enableSpatialAwarenessSystem: 1
   spatialAwarenessSystemType:
     reference: Microsoft.MixedReality.Toolkit.SpatialAwareness.MixedRealitySpatialAwarenessSystem,
       Microsoft.MixedReality.Toolkit.Services.SpatialAwarenessSystem
-  spatialAwarenessSystemProfile: {fileID: 11400000, guid: 97da727944a3d7b4caf42d2273271a24, type: 2}
+  spatialAwarenessSystemProfile: {fileID: 11400000, guid: f5da3e49ddd8dc345a12db66ca44c3af, type: 2}
   diagnosticsSystemProfile: {fileID: 11400000, guid: 98c44dd2a43783c4dbc96c9ce8a4e928, type: 2}
   enableDiagnosticsSystem: 1
   diagnosticsSystemType:
     reference: Microsoft.MixedReality.Toolkit.Diagnostics.MixedRealityDiagnosticsSystem,
       Microsoft.MixedReality.Toolkit.Services.DiagnosticsSystem
-  sceneSystemProfile: {fileID: 11400000, guid: 069efa41032a317409790a6a08435311, type: 2}
-  enableSceneSystem: 0
+  sceneSystemProfile: {fileID: 11400000, guid: 0f98b8070a31b8e42aaaca3b8db75072, type: 2}
+  enableSceneSystem: 1
   sceneSystemType:
     reference: Microsoft.MixedReality.Toolkit.SceneSystem.MixedRealitySceneSystem,
       Microsoft.MixedReality.Toolkit.Services.SceneSystem
   registeredServiceProvidersProfile: {fileID: 11400000, guid: efbaf6ea540c69f4fb75415a5d145a53, type: 2}
   useServiceInspectors: 0
-  renderDepthBuffer: 0
+  renderDepthBuffer: 1
   enableVerboseLogging: 0
